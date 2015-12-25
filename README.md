@@ -26,7 +26,7 @@ SEO help package from Laravel
     class aliases :
 
 	```php
-	'Settings' => Orchid\SEO\Facades\SEOFacades::class
+	'SEO' => Orchid\SEO\Facades\SEOFacades::class
 	```
 
 1. create settings table
