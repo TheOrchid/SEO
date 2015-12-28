@@ -1,1 +1,0 @@
-<meta property="{{$name}}" content="{{$content}}">

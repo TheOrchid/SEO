@@ -1,25 +1,78 @@
-<?php namespace Orchid\SEO\SeoTrait;
+<?php namespace Orchid\SEO\Traits;
 
-use Cache;
+use Route;
 
 trait SeoTrait
 {
+
     /**
-     * @param array $data
+     * @param null $id
      */
-    public function generate(array $data = null)
+    public function render($id = null)
     {
-        if (is_null($data)) {
-            /* Automatic Detection */
+        $meta = collect($this->generate($id));
+        return view('seo::meta', [
+            'SeoMetaTags' => $meta
+        ]);
+    }
 
-
+    /**
+     * @param int|null $id
+     */
+    public function generate($id = null)
+    {
+        if (is_null($id)) {
+            $currentRouteName = Route::current()->uri();
+            $meta = $this->where('route', $currentRouteName)->first();
         } else {
-            /* Without the use of database */
-            $this->fill($data);
-
+            $meta = $this->find('story_id', $id);
         }
 
+        $meta = collect($meta->attributes);
 
+        $meta = collect([
+            'title' => $meta->only(['title']),
+            'meta' => $meta->only(['description', 'keywords', 'robots']),
+            'og' => $meta->only(['title', 'description', 'image', 'video', 'audio']),
+            'custom' => $meta->only(['custom']),
+        ]);
+
+        foreach ($meta as $key => $value) {
+            $meta[$key] = $value->reject(function ($item) {
+                return is_null($item) || empty($item);
+            });
+        }
+
+        return $meta;
+
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function staticGetRoute()
+    {
+        //Берём все роуты
+        $routeCollection = collect(Route::getRoutes());
+
+        //Делаем доступными роуты без ASCII символов в ключе
+        $newRouteCoolection = collect();
+        foreach ($routeCollection as $key => $item) {
+            $newRouteCoolection[strip_tags($key)] = $item;
+        }
+
+        //Только GET запросы
+        $routeGetMethodCollection = collect($newRouteCoolection['*routes']['GET']);
+
+        //Get запросы без параметров (Статика!)
+        $allowGetRoutes = collect();
+        foreach ($routeGetMethodCollection as $key => $value) {
+            if (!preg_match('/\{*\}/', $key)) {
+                $allowGetRoutes->push($key);
+            }
+        }
+
+        return $allowGetRoutes;
     }
 
 

@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Facade;
 use Orchid\SEO\Models\SEO;
 
-class SettingsFacades extends Facade
+class SEOFacades extends Facade
 {
     /**
      * Получить зарегистрированное имя компонента.

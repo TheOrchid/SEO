@@ -1,7 +1,8 @@
 <?php namespace Orchid\SEO\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Orchid\SEO\SeoTrait\SeoTrait;
+use Orchid\SEO\Traits\SeoTrait;
+use Route;
 
 class SEO extends Model
 {
