@@ -1,5 +1,6 @@
 <?php namespace Orchid\SEO\Traits;
 
+use App;
 use Route;
 
 trait SeoTrait
@@ -29,7 +30,10 @@ trait SeoTrait
     {
         if (is_null($id)) {
             $currentRouteName = Route::current()->uri();
-            $meta = $this->where('route', $currentRouteName)->first();
+            $meta = $this
+                ->where('route', $currentRouteName)
+                ->where('lang', App::getLocale())
+                ->first();
         } else {
             $meta = $this->find('story_id', $id);
         }
