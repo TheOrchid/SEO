@@ -22,6 +22,7 @@ class SEO extends Model
         'video',
         'audio',
         'custom',
+        'lang'
     ];
 
     protected $casts = [
