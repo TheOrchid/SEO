@@ -10,10 +10,16 @@ trait SeoTrait
      */
     public function render($id = null)
     {
-        $meta = collect($this->generate($id));
-        return view('seo::meta', [
-            'SeoMetaTags' => $meta
-        ]);
+        $generate = $this->generate($id);
+
+        if (!is_null($generate)) {
+            $meta = collect($generate);
+            return view('seo::meta', [
+                'SeoMetaTags' => $meta
+            ]);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -28,22 +34,24 @@ trait SeoTrait
             $meta = $this->find('story_id', $id);
         }
 
-        $meta = collect($meta->attributes);
+        if (!is_null($meta)) {
+            $meta = collect($meta->attributes);
 
-        $meta = collect([
-            'title' => $meta->only(['title']),
-            'meta' => $meta->only(['description', 'keywords', 'robots']),
-            'og' => $meta->only(['title', 'description', 'image', 'video', 'audio']),
-            'custom' => $meta->only(['custom']),
-        ]);
+            $meta = collect([
+                'title' => $meta->only(['title']),
+                'meta' => $meta->only(['description', 'keywords', 'robots']),
+                'og' => $meta->only(['title', 'description', 'image', 'video', 'audio']),
+                'custom' => $meta->only(['custom']),
+            ]);
 
-        foreach ($meta as $key => $value) {
-            $meta[$key] = $value->reject(function ($item) {
-                return is_null($item) || empty($item);
-            });
+            foreach ($meta as $key => $value) {
+                $meta[$key] = $value->reject(function ($item) {
+                    return is_null($item) || empty($item);
+                });
+            }
+
+            return $meta;
         }
-
-        return $meta;
 
     }
 
